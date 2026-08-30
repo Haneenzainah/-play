@@ -1,0 +1,533 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎮 مغامرة الأنماط العددية 🔢</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4A90E2;
+      --secondary: #FF9F43;
+      --success: #2ECC71;
+      --danger: #EE5253;
+      --bg: #F4F7FE;
+      --card-bg: #FFFFFF;
+      --text: #2D3436;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Tajawal', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .game-container {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 650px;
+      border-radius: 24px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+      padding: 25px;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid #E2E8F0;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Welcome Screen */
+    .hero-img {
+      font-size: 70px;
+      animation: bounce 2s infinite;
+    }
+
+    h1 {
+      color: var(--primary);
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    h2 {
+      color: var(--primary);
+      font-size: 22px;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      padding: 14px;
+      border: 3px solid #CBD5E0;
+      border-radius: 12px;
+      font-size: 18px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+
+    /* Buttons */
+    .btn {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 20px;
+      font-weight: 700;
+      border-radius: 16px;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #E67E22;
+      transition: all 0.2s;
+      width: 80%;
+      max-width: 300px;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #E67E22;
+    }
+
+    /* Game Header */
+    .header-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #EDF2F7;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background-color: #E2E8F0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: var(--success);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    /* Pattern Card Display */
+    .pattern-display {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 15px 0;
+      width: 100%;
+    }
+
+    .number-card {
+      background-color: #EBF8FF;
+      border: 3px solid var(--primary);
+      color: var(--primary);
+      font-size: 24px;
+      font-weight: 900;
+      padding: 12px 18px;
+      border-radius: 16px;
+      min-width: 60px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .number-card.blank {
+      background-color: #FFF5F5;
+      border: 3px dashed var(--danger);
+      color: var(--danger);
+    }
+
+    /* Options Grid */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+    }
+
+    .option-btn {
+      background: white;
+      border: 2px solid #CBD5E0;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover {
+      border-color: var(--primary);
+      background-color: #F7FAFC;
+    }
+
+    /* Stage 2 Inputs */
+    .input-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .pattern-input {
+      width: 80px;
+      padding: 10px;
+      font-size: 22px;
+      text-align: center;
+      border: 3px solid var(--primary);
+      border-radius: 12px;
+    }
+
+    /* Feedback Box */
+    .feedback {
+      min-height: 48px;
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      border-radius: 8px;
+      padding: 5px;
+    }
+
+    .feedback.correct {
+      color: var(--success);
+    }
+
+    .feedback.incorrect {
+      color: #D63031;
+    }
+
+    .visual-hint {
+      font-size: 16px;
+      color: #6C5CE7;
+      font-weight: bold;
+    }
+
+    /* Footer Credits */
+    .teacher-credit {
+      margin-top: 15px;
+      font-size: 15px;
+      color: #718096;
+      font-weight: 700;
+    }
+
+    /* Animations */
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="screen active">
+      <div class="hero-img">🎮🔢</div>
+      <h1>مغامرة الأنماط العددية</h1>
+      <p style="font-size: 18px; color: #4A5568;">مرحبًا يا بطل الرياضيات! أدخل اسمك لنبدأ المغامرة</p>
+      <input type="text" id="player-name-input" placeholder="اكتب اسمك هنا..." maxlength="20">
+      <button class="btn" onclick="startGame()">ابدأ المغامرة 🚀</button>
+    </div>
+
+    <!-- Gameplay Screen -->
+    <div id="game-screen" class="screen">
+      <div class="header-bar">
+        <span id="player-display"></span>
+        <span id="stage-display">المرحلة الأولى</span>
+        <span id="score-display">⭐ 0</span>
+      </div>
+
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+
+      <div id="question-tracker" style="color: #718096; font-weight: bold;">السؤال 1 من 6</div>
+
+      <h3 id="question-text" style="font-size: 20px; color: var(--text);">اكتشف العدد الناقص والقاعدة:</h3>
+
+      <!-- Dynamic Pattern Display -->
+      <div id="pattern-container" class="pattern-display"></div>
+
+      <!-- Stage 1 Options -->
+      <div id="options-container" class="options-grid"></div>
+
+      <!-- Stage 2 Input Controls -->
+      <div id="input-container" class="input-group" style="display: none;">
+        <!-- Dynamic Inputs Inserted via JS -->
+      </div>
+      <button id="submit-input-btn" class="btn" style="display: none; margin-top: 10px;" onclick="checkInputAnswer()">تحقق من الإجابة ✔️</button>
+
+      <!-- Dynamic Feedback Area -->
+      <div id="feedback" class="feedback"></div>
+
+      <button id="next-btn" class="btn" style="display: none;" onclick="nextQuestion()">التالي ➔</button>
+    </div>
+
+    <!-- Stage Transition Screen -->
+    <div id="stage-transition-screen" class="screen">
+      <div style="font-size: 60px;">⭐🏆</div>
+      <h2>رائع جدًا! أنهيت المرحلة الأولى</h2>
+      <p id="stage1-summary" style="font-size: 18px;"></p>
+      <button class="btn" onclick="startStage2()">انتقل إلى المرحلة الثانية ⭐</button>
+    </div>
+
+    <!-- Final Results Screen -->
+    <div id="final-screen" class="screen">
+      <div style="font-size: 70px;">🎉</div>
+      <h1 id="final-title">أحسنت!</h1>
+      <p style="font-size: 18px; color: #4A5568;">لقد أنهيت مغامرة الأنماط العددية بنجاح.</p>
+      
+      <div style="background: #EDF2F7; width: 100%; padding: 15px; border-radius: 16px; text-align: right; display: flex; flex-direction: column; gap: 8px;">
+        <p>👤 <strong>الاسم:</strong> <span id="final-name"></span></p>
+        <p>⭐ <strong>مجموع النقاط:</strong> <span id="final-score"></span></p>
+        <p>✅ <strong>الإجابات الصحيحة:</strong> <span id="final-correct"></span> من 12</p>
+        <p>🏅 <strong>الوسام المستحق:</strong> <span id="final-badge" style="color: var(--primary); font-weight: 900;"></span></p>
+      </div>
+
+      <blockquote style="background: #EBF8FF; padding: 10px; border-right: 4px solid var(--primary); border-radius: 6px; font-size: 15px;">
+        💡 <strong>تذكّر:</strong> لاكتشاف النمط، ابحث عن القاعدة التي تتكرر بين الأعداد.
+      </blockquote>
+
+      <button class="btn" onclick="location.reload()">العب مرة أخرى 🔄</button>
+      
+      <div class="teacher-credit">إعداد المعلمة: حنين زينه 🌷</div>
+    </div>
+
+  </div>
+
+  <script>
+    // Game Data
+    const stage1Questions = [
+      { pattern: ['5', '10', '15', '20', '؟'], options: [25, 30, 24], correct: 25, rule: "نضيف 5", visual: "+5" },
+      { pattern: ['12', '16', '20', '24', '؟'], options: [26, 28, 30], correct: 28, rule: "نضيف 4", visual: "+4" },
+      { pattern: ['40', '35', '30', '25', '؟'], options: [15, 20, 30], correct: 20, rule: "نطرح 5", visual: "-5" },
+      { pattern: ['60', '50', '40', '30', '؟'], options: [10, 20, 25], correct: 20, rule: "نطرح 10", visual: "-10" },
+      { pattern: ['7', '14', '21', '28', '؟'], options: [32, 35, 36], correct: 35, rule: "نضيف 7", visual: "+7" },
+      { pattern: ['10', '15', '⬜', '25', '30'], options: [18, 20, 22], correct: 20, rule: "نضيف 5", visual: "+5" }
+    ];
+
+    const stage2Questions = [
+      { pattern: ['25', '30', '35', '40', '⬜', '⬜'], inputsCount: 2, correct: [45, 50], rule: "نضيف 5", visual: "+5" },
+      { pattern: ['100', '90', '80', '⬜', '60'], inputsCount: 1, correct: [70], rule: "نطرح 10", visual: "-10" },
+      { pattern: ['15', '⬜', '25', '30', '35'], inputsCount: 1, correct: [20], rule: "نضيف 5", visual: "+5" },
+      { pattern: ['8', '12', '16', '20', '؟'], inputsCount: 1, correct: [24], rule: "نضيف 4", visual: "+4" },
+      { pattern: ['3', '6', '9', '12', '؟'], inputsCount: 1, correct: [15], rule: "نضيف 3", visual: "+3" },
+      { pattern: ['50', '45', '40', '35', '⬜', '⬜'], inputsCount: 2, correct: [30, 25], rule: "نطرح 5", visual: "-5", isStar: true }
+    ];
+
+    // Game State Variables
+    let playerName = "";
+    let currentStage = 1;
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let correctCount = 0;
+    let hintUsed = false;
+
+    function startGame() {
+      const input = document.getElementById('player-name-input').value.trim();
+      if (!input) {
+        alert("لطفًا أدخل اسمك قبل البداية!");
+        return;
+      }
+      playerName = input;
+      document.getElementById('player-display').innerText = `👤 ${playerName}`;
+      switchScreen('game-screen');
+      loadQuestion();
+    }
+
+    function switchScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function loadQuestion() {
+      hintUsed = false;
+      document.getElementById('feedback').innerText = '';
+      document.getElementById('next-btn').style.display = 'none';
+
+      const questions = currentStage === 1 ? stage1Questions : stage2Questions;
+      const q = questions[currentQuestionIndex];
+
+      // Update progress tracker
+      const totalQuestions = 6;
+      document.getElementById('question-tracker').innerText = `السؤال ${currentQuestionIndex + 1} من ${totalQuestions}`;
+      document.getElementById('progress-fill').style.width = `${((currentQuestionIndex + 1) / totalQuestions) * 100}%`;
+      document.getElementById('score-display').innerText = `⭐ ${score}`;
+
+      // Render Pattern Cards
+      const container = document.getElementById('pattern-container');
+      container.innerHTML = '';
+      q.pattern.forEach(val => {
+        const card = document.createElement('div');
+        card.className = `number-card ${(val === '؟' || val === '⬜') ? 'blank' : ''}`;
+        card.innerText = val;
+        container.appendChild(card);
+      });
+
+      // Controls for Stage 1 vs Stage 2
+      const optionsContainer = document.getElementById('options-container');
+      const inputContainer = document.getElementById('input-container');
+      const submitBtn = document.getElementById('submit-input-btn');
+
+      if (currentStage === 1) {
+        optionsContainer.style.display = 'grid';
+        inputContainer.style.display = 'none';
+        submitBtn.style.display = 'none';
+        optionsContainer.innerHTML = '';
+
+        q.options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.innerText = opt;
+          btn.onclick = () => checkOptionAnswer(opt);
+          optionsContainer.appendChild(btn);
+        });
+      } else {
+        optionsContainer.style.display = 'none';
+        inputContainer.style.display = 'flex';
+        submitBtn.style.display = 'inline-block';
+        inputContainer.innerHTML = '';
+
+        for (let i = 0; i < q.inputsCount; i++) {
+          const inp = document.createElement('input');
+          inp.type = 'number';
+          inp.className = 'pattern-input';
+          inp.id = `input-${i}`;
+          inputContainer.appendChild(inp);
+        }
+      }
+    }
+
+    function checkOptionAnswer(selected) {
+      const q = stage1Questions[currentQuestionIndex];
+      const feedback = document.getElementById('feedback');
+
+      if (selected === q.correct) {
+        const points = hintUsed ? 5 : 10;
+        score += points;
+        correctCount++;
+        feedback.className = 'feedback correct';
+        feedback.innerText = `أحسنت! اكتشفت القاعدة 🎉 (${q.rule})`;
+        disableControls();
+        document.getElementById('next-btn').style.display = 'inline-block';
+      } else {
+        hintUsed = true;
+        feedback.className = 'feedback incorrect';
+        feedback.innerHTML = `محاولة خاطئة. تلميح: لاحظ مقدار التغير بين الأعداد (<span class="visual-hint">${q.visual}</span>)`;
+      }
+    }
+
+    function checkInputAnswer() {
+      const q = stage2Questions[currentQuestionIndex];
+      const feedback = document.getElementById('feedback');
+      let userAnswers = [];
+
+      for (let i = 0; i < q.inputsCount; i++) {
+        const val = parseInt(document.getElementById(`input-${i}`).value);
+        userAnswers.push(val);
+      }
+
+      const isCorrect = userAnswers.every((val, index) => val === q.correct[index]);
+
+      if (isCorrect) {
+        const points = hintUsed ? 5 : 10;
+        score += points;
+        correctCount++;
+        feedback.className = 'feedback correct';
+
+        if (q.isStar) {
+          feedback.innerText = `رائع! لقد أصبحت خبيرًا في اكتشاف الأنماط العددية! 🏆`;
+        } else {
+          feedback.innerText = `إجابة رائعة! القاعدة هي: ${q.rule} 🎉`;
+        }
+        
+        disableControls();
+        document.getElementById('next-btn').style.display = 'inline-block';
+      } else {
+        hintUsed = true;
+        feedback.className = 'feedback incorrect';
+        feedback.innerHTML = `فكر مجددًا! تلميح: المقدار الثابت هو (<span class="visual-hint">${q.visual}</span>)`;
+      }
+    }
+
+    function disableControls() {
+      document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+      document.querySelectorAll('.pattern-input').forEach(inp => inp.disabled = true);
+      document.getElementById('submit-input-btn').style.display = 'none';
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      const currentList = currentStage === 1 ? stage1Questions : stage2Questions;
+
+      if (currentQuestionIndex < currentList.length) {
+        loadQuestion();
+      } else {
+        if (currentStage === 1) {
+          document.getElementById('stage1-summary').innerText = `جمعت حتى الآن ⭐ ${score} نقطة وأجبت بشكل صحيح على الأسئلة!`;
+          switchScreen('stage-transition-screen');
+        } else {
+          showFinalScreen();
+        }
+      }
+    }
+
+    function startStage2() {
+      currentStage = 2;
+      currentQuestionIndex = 0;
+      document.getElementById('stage-display').innerText = 'المرحلة الثانية';
+      switchScreen('game-screen');
+      loadQuestion();
+    }
+
+    function showFinalScreen() {
+      switchScreen('final-screen');
+      document.getElementById('final-title').innerText = `🎉 أحسنت يا ${playerName}! 🎉`;
+      document.getElementById('final-name').innerText = playerName;
+      document.getElementById('final-score').innerText = score;
+      document.getElementById('final-correct').innerText = correctCount;
+
+      const badge = score >= 100 ? "🏆 بطل الأنماط العددية" : "🏅 مستكشف الأنماط";
+      document.getElementById('final-badge').innerText = badge;
+    }
+  </script>
+</body>
+</html>
